@@ -1,3 +1,8 @@
+DROP DATABASE IF EXISTS tracker;
+
+CREATE DATABASE tracker;
+USE tracker;
+
 DROP TABLE IF EXISTS department;
 DROP TABLE IF EXISTS roles;
 DROP TABLE IF EXISTS employee;
@@ -20,8 +25,8 @@ CREATE TABLE employee (
     first_name VARCHAR(30) NOT NULL,
     last_name VARCHAR(30) NOT NULL,
     role_id INTEGER,
-    FOREIGN KEY(role_id) REFERENCES roles(id) ON DELETE SET NULL,
     manager_id INTEGER,
-    FOREIGN KEY (manager_id) REFERENCES roles(id) ON DELETE SET NULL
+    FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE SET NULL,
+    FOREIGN KEY (manager_id) REFERENCES employee(id) ON DELETE SET NULL
 );
 
