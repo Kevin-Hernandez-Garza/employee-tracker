@@ -16,6 +16,8 @@ inquirer
                 'View all Department',
                 'View all Roles',
                 'Add Employee',
+                'Add a Department',
+                'Add a Role',
                 'Update Employee Role'
             ]
         },
@@ -35,6 +37,14 @@ inquirer
             allRoles();
             break;
 
+            case 'Add a Department':
+            addDepartment();
+            break;
+
+            case 'Add a Role':
+            addRole();
+            break;
+
             case 'Add Employee':
             newEmployee();
             break;
@@ -48,6 +58,92 @@ inquirer
 
 // console.table(data coming from sql)
 // when inserting sql queries according to the prompt insert literals in the tables
+
+
+addDepartment = () => {
+    inquirer
+        .prompt([
+            {
+                type: 'input',
+                name: 'name',
+                message: 'Enter a department name!',
+                validate: departName => {
+                    if(departName) {
+                        return true;
+                    } else {
+                        console.log('Please enter a department name!');
+                        return false;
+                    }
+                }
+            },
+        ]) .then((answers) => {
+            db.query(`INSERT INTO department(name) VALUES (?)`, answers.name, (err,results) => {
+            if (err) throw err;
+            console.table(`You have inserted ${results.affectedRows} as an department!`);
+            allDepartment()
+            })
+        })
+}
+
+addRole = () => {
+    inquirer 
+        .prompt([
+            {
+                type: 'input',
+                name:'title',
+                message: 'Please enter a title for the role!',
+                validate: newRole => {
+                    if(newRole) { 
+                        return true;
+                    } else {
+                        console.log('Please enter a valid role!');
+                        return false;
+                    }
+                }
+            },
+            {
+                type: 'input',
+                name:'salary',
+                message: 'Please enter the salary pay for this role',
+                validate: validSalary => {
+                    if(validSalary) {
+                        return true;
+                    } else {
+                        console.log('Please enter a valid salary!');
+                        return false;
+                    }
+                }
+            },
+            {
+                type: 'list',
+                name: 'department',
+                message: 'What department does this role belong to?',
+                choices: ['Engineering', 'Sales', 'Legal', 'Finance', 'Not Available']
+            }
+        ]) .then((answers) => {
+            if(answers.department === 'Engineering') {
+                answers.department = 1;
+            }
+            if(answers.department === 'Sales') {
+                answers.department = 2;
+            }
+            if(answers.department === 'Legal') {
+                answers.department = 3;
+            }
+            if(answers.department === 'Finance') {
+                answers.department = 4;
+            }
+            if(answers.department === 'Not Available') {
+                answers.department = NULL;
+            }
+            db.query(`INSERT INTO roles (title, salary, department_id) VALUES (?,?,?)`, [answers.title, answers.salary, answers.department], (err, results) => {
+            if (err) throw err;
+            console.table(`You have inserted ${results.affectedRows} as a new role!`);
+            allRoles()
+            })
+        })
+}
+
 
 // update employee
 // literal `UPDATE employee SET role_id = ? WHERE id = ?;`
@@ -159,7 +255,6 @@ inquirer
             allEmployees()
         })
     })
-    // promptUser()
 }
 
 allEmployees = () => {
