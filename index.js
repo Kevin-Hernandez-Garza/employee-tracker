@@ -112,15 +112,50 @@ inquirer
             choices: [
                 'Kevin Hernandez',
                 'Heather West',
-                'Stephen West',
+                'Stephen McGuire',
                 'Not Available'
             ]
         }
 
     ])
     .then((answers) => {
-        db.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)`,[answers.newName, answers.lastName, answers.role, answers.manager], (err, results) => {
-            // console.table(results);
+        if(answers.role === 'Senior Engineer') {
+            answers.role = 1;
+        }
+        if(answers.role === 'Software Engineer') {
+            answers.role = 2;
+        }
+        if(answers.role === 'Lead Engineer') {
+            answers.role = 3;
+        }
+        if(answers.role === 'Sales Person') {
+            answers.role = 4;
+        }
+        if(answers.role === 'Sales Lead') {
+            answers.role = 5;
+        }
+        if(answers.role === 'Accountant') {
+            answers.role = 6;
+        }
+        if(answers.role === 'Lawyer') {
+            answers.role = 7;
+        }
+        if(answers.manager === 'Kevin Hernandez') {
+            answers.manager = 1;
+        }
+        if(answers.manager === 'Heather West') {
+            answers.manager = 7;
+        }
+        if(answers.manager === 'Stephen McGuire') {
+            answers.manager = 9;
+        }
+        if(answers.manager === 'Not Available') {
+            answers.manager = NULL; 
+        }
+        
+        db.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?,?,?,?)`,[answers.newName, answers.lastName, answers.role, answers.manager], (err, results) => {
+            if (err) throw err;
+            console.table(`You have inserted ${results.affectedRows} as an employee!`);
             allEmployees()
         })
     })
