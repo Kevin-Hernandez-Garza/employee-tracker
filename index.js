@@ -18,7 +18,8 @@ inquirer
                 'Add Employee',
                 'Add a Department',
                 'Add a Role',
-                'Update Employee Role'
+                'Update Employee Role',
+                "I'm Done"
             ]
         },
     ])
@@ -51,6 +52,10 @@ inquirer
 
             case 'Update Employee Role':
             updateEmp();
+            break;
+
+            case "I'm Done":
+            console.log('Thank you!');
             break;
         }
     })
@@ -150,13 +155,46 @@ addRole = () => {
 // literal `UPDATE employee SET manager_id = ? WHERE id = ?;`
 updateEmp = () => {
 
+    const sql = db.query(`SELECT first_name, last_name FROM employee;`)
+
+
+    inquirer 
+        .prompt([
+            {
+                type: 'input',
+                name: 'employeeId',
+                message: 'What employee ID would you like to update?',
+                validate: empId => {
+                    if(empId) {
+                        return true;
+                    } else {
+                        console.log('Please pick the correct ID!');
+                        return false;
+                    }
+                }
+            },
+            {
+                type: 'list',
+                name: 'newRole',
+                message: 'What is there new Role ID?',
+                choices: [1, 2, 3, 4, 5, 6, 7]
+            },
+            {
+                type: 'list',
+                name: 'newManager',
+                message: 'Do they have a new manager?',
+                choices: [1,3,7, "NULL"]
+            }
+        ]) .then((answers) => {
+            db.query(`UPDATE employee SET role_id = ?, manager_id = ? WHERE id = ?`, [answers.newRole, answers.newManager, answers.employeeId], (err, results) => {
+                if(err) throw err;
+                console.table(`You have updated the employee's role ${results.affectedRows}`);
+                allEmployees()
+            })
+        })
 }
 
 
-/* 
-    `INSERT INTO employee (first_name, last_name, role_id, manager_id)
-    VALUES (?,?,?,?);`
-*/
 //new employee
 newEmployee = () => {
 inquirer 
